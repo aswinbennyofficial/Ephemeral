@@ -1,0 +1,33 @@
+<!-- In public/download.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Download Page</title>
+    <script>
+        // You can now use fileID in your fetch requests or any other JavaScript logic
+        console.log("File ID:", fileID);
+
+        // Example of making a fetch request using fileID
+        fetch(`/api/download/${fileID}`)
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                }
+                throw new Error('Network response was not ok.');
+            })
+            .then(data => {
+                console.log('Download data:', data);
+            })
+            .catch(error => {
+                console.error('Fetch error:', error);
+            });
+    </script>
+</head>
+<body>
+    <h1>Download Page</h1>
+    <p>Your File ID is: <span id="fileIDDisplay"></span></p>
+    <!-- Additional content goes here -->
+</body>
+</html>
