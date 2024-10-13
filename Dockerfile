@@ -14,9 +14,8 @@ RUN mkdir -p /var/www/html/uploads && \
     chown -R www-data:www-data /var/www/html/uploads
 
 # Copy application files to the Apache document root
-COPY public/ /var/www/html/
-COPY src/ /var/www/html/src/
-COPY db/ /var/www/html/db/
+COPY backend/ /var/www/html/
+COPY public/ /var/www/html/public/
 
 # Set the working directory
 WORKDIR /var/www/html
