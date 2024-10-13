@@ -17,7 +17,6 @@ RUN mkdir -p /var/www/html/uploads && \
 COPY public/ /var/www/html/
 COPY src/ /var/www/html/src/
 COPY db/ /var/www/html/db/
-COPY docker-compose.yaml /var/www/html/
 
 # Set the working directory
 WORKDIR /var/www/html
