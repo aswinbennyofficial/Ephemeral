@@ -7,28 +7,22 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8080:80"                # Map port 80 of the container to port 8080 on the host
-    #volumes:
-     # - /app:/var/www/html      # Mount the app directory for live changes
+    # volumes:
+      # - ./app:/var/www/html      # Mount the app directory for live changes
 
-  # Uncomment the section for PostgreSQL if you choose to use it
-  # db:
-  #   image: postgres:alpine
-  #   environment:
-  #     POSTGRES_DB: mydatabase
-  #     POSTGRES_USER: user
-  #     POSTGRES_PASSWORD: password
-  #   volumes:
-  #     - ./db:/var/lib/postgresql/data
-  #   networks:
-  #     - my_network
-
-  # Uncomment this section if you choose to use SQLite
-  sqlite:
-    image: nouchka/sqlite3:latest
+  db:
+    image: bitnami/postgresql
+    environment:
+      POSTGRES_DB: mydatabase
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
     volumes:
-      - ./db:/data                # Store SQLite database in the db directory
+      - ephemeralDB:/bitnami/postgresql/data  # Use named volume for persistence
     networks:
       - my_network
 
 networks:
   my_network:
+
+volumes:
+  ephemeralDB:  # Define named volume
