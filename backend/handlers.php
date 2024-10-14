@@ -42,35 +42,55 @@ function downloadPageHandler($request, $response, $args) {
 
 function loginHandler($request, $response) {
     $db = getDbConnection();
-    // $data = $request->getParsedBody();
+    
+    // Parse the JSON body
     $data = json_decode($request->getBody(), true);
     $email = $data['email'] ?? '';
     $password = $data['password'] ?? '';
 
+    // Check for empty email or password
     if (empty($email) || empty($password)) {
-        return jsonResponse($response, ['error' => 'email and password are required'], 400);
+        return jsonResponse($response, ['error' => 'Email and password are required'], 400);
     }
 
+    // Query to fetch user by email
     $stmt = $db->prepare('SELECT * FROM users WHERE email = :email');
     $stmt->execute(['email' => $email]);
     $user = $stmt->fetch();
+    if (empty($user)) {
+        return jsonResponse($response, ['error' => 'Invalid credentials. No user exists in db'], 401);
+    }
 
-    if ($user && password_verify($password, $user['password'])) {
+    // Check if user exists and the password hash is valid
+    if ($user && isset($user['passwordhash']) && password_verify($password, $user['passwordhash'])) {
         $issuedAt = time();
-        $expirationTime = $issuedAt + 3600; // JWT valid for 1 hour
+        $expirationTime = $issuedAt + 3600; // Token valid for 1 hour
         $payload = [
             'iat' => $issuedAt,
             'exp' => $expirationTime,
-            'user_id' => $user['id'],
-            'email' => $email
+            'email' => $email,
         ];
 
-        $token = JWT::encode($payload, getenv('JWT_SECRET'), 'HS256');
-        return jsonResponse($response, ['token' => $token]);
+        // Generate JWT token
+        $token = JWT::encode($payload, 'your_secret_key', 'HS256');
+        
+        // Set the JWT token as an HTTP-only cookie
+        setcookie('jwt', $token, [
+            'expires' => time() + 3600,
+            'path' => '/',
+            'secure' => false, // Set to true in production (HTTPS)
+            'httponly' => true,
+            'samesite' => 'Lax',
+        ]);
+
+        return jsonResponse($response, ['message' => 'Login successful']);
     } else {
+        // Return invalid credentials error
         return jsonResponse($response, ['error' => 'Invalid credentials'], 401);
     }
 }
+
+
 
 // Fix register handler
 function registerHandler($request, $response) {

@@ -246,20 +246,29 @@ function login(email, password) {
         },
         body: JSON.stringify({ email, password }),
     })
-    .then(response => response.json())
+    .then(response => {
+        if (!response.ok) {
+            return response.json().then(errData => {
+                throw new Error(errData.error || 'Login failed.');
+            });
+        }
+        return response.json();
+    })
     .then(data => {
-        if (data.token) {
-            document.cookie = `jwt=${data.token}; path=/; max-age=86400; secure; samesite=strict`;
-            window.location.href = 'dashboard.html';
+        // Since the JWT is set as a cookie, we don't need to handle the token directly
+        if (data.message === 'Login successful') {
+            // Redirect to the dashboard
+            window.location.href = '/dashboard';
         } else {
-            alert('Login failed: ' + data.message);
+            alert('Login failed: ' + (data.error || 'Unknown error'));
         }
     })
     .catch(error => {
         console.error('Error:', error);
-        alert('An error occurred during login.');
+        alert('An error occurred during login: ' + error.message);
     });
 }
+
 
 function signUp(firstName, lastName, email, password) {
     fetch('/api/register', {
