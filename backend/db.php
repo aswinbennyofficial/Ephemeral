@@ -1,9 +1,13 @@
 <?php
 function getDbConnection() {
-    $host = getenv('DB_HOST');
-    $dbname = getenv('DB_NAME');
-    $user = getenv('DB_USER');
-    $pass = getenv('DB_PASS');
+    // $host = getenv('DB_HOST');
+    // $dbname = getenv('DB_NAME');
+    // $user = getenv('DB_USER');
+    // $pass = getenv('DB_PASS');
+    $host="db";
+    $dbname = "mydatabase";
+    $user = "user";
+    $pass = "password";
 
     $dsn = "pgsql:host=$host;dbname=$dbname";
     $options = [

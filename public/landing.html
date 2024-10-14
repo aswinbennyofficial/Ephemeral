@@ -3,10 +3,309 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>SuSHi | Homepage</title>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@latest/dist/full.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&family=Ubuntu:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: "Poppins", sans-serif;
+        }
+
+        .ubuntu-bold {
+            font-family: "Ubuntu", sans-serif;
+            font-weight: 700;
+        }
+
+        .poppins-medium {
+            font-family: "Poppins", sans-serif;
+            font-weight: 500;
+        }
+
+        .medium-text {
+            font-size: 2rem;
+            line-height: 1.2;
+        }
+    </style>
 </head>
-<body>
-    
-    <h1>Hello</h1>
+<body class="bg-base-200">
+    <!-- Navbar -->
+    <nav class="navbar bg-base-100 shadow-lg p-4">
+        <div class="navbar-start">
+            <span class="ubuntu-bold poppins-medium medium-text">SuSHi</span>
+        </div>
+        <div class="navbar-end">
+            <button class="btn btn-primary mr-2" onclick="document.getElementById('loginModal').showModal()">Login</button>
+            <button class="btn btn-secondary" onclick="document.getElementById('signupModal').showModal()">Sign Up</button>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <div class="hero min-h-screen bg-cover bg-center" style="background-image: url('./images/terminal.png');">
+        <div class="hero-overlay bg-opacity-60"></div>
+        <div class="hero-content text-neutral-content text-center flex flex-col justify-center items-center h-full p-6">
+            <div class="max-w-md">
+                <h1 class="text-5xl font-bold mb-5">Hello there</h1>
+                <p class="mb-5 text-lg">
+                    Welcome to SuSHi, a web-based platform that helps to make SSH connections to remote machines from any location, with a browser based terminal. 
+                </p>
+                <button class="btn btn-primary mr-2" onclick="document.getElementById('loginModal').showModal()">Login</button>
+                <button class="btn btn-secondary" onclick="document.getElementById('signupModal').showModal()">Sign Up</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <dialog id="loginModal" class="modal">
+        <div class="modal-box">
+            <h3 class="font-bold text-lg mb-4">Login</h3>
+            <form id="loginForm" class="flex flex-col gap-4">
+                <input type="email" placeholder="Email" class="input input-bordered" required>
+                <input type="password" placeholder="Password" class="input input-bordered" required>
+                <button type="submit" class="btn btn-primary">Login</button>
+            </form>
+            <!-- <div class="divider">OR</div>
+            <div class="flex flex-col gap-4">
+                <button id="googleLogin" class="btn btn-outline btn-primary">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12.545,10.239v3.821h5.445c-0.712,2.315-2.647,3.972-5.445,3.972c-3.332,0-6.033-2.701-6.033-6.032s2.701-6.032,6.033-6.032c1.498,0,2.866,0.549,3.921,1.453l2.814-2.814C17.503,2.988,15.139,2,12.545,2C7.021,2,2.543,6.477,2.543,12s4.478,10,10.002,10c8.396,0,10.249-7.85,9.426-11.748L12.545,10.239z"/>
+                    </svg>
+                    Login with Google
+                </button>
+                <button id="githubLogin" class="btn btn-outline btn-secondary">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                    </svg>
+                    Login with GitHub
+                </button>
+            </div> -->
+        </div>
+        <form method="dialog" class="modal-backdrop">
+            <button>Close</button>
+        </form>
+    </dialog>
+
+    <!-- Sign Up Modal -->
+    <dialog id="signupModal" class="modal">
+        <div class="modal-box">
+            <h3 class="font-bold text-lg mb-4">Sign Up</h3>
+            <form id="signupForm" class="flex flex-col gap-4">
+                <input type="text" placeholder="First Name" class="input input-bordered" required>
+                <input type="text" placeholder="Last Name" class="input input-bordered" required>
+                <input type="email" placeholder="Email" class="input input-bordered" required>
+                <input type="password" placeholder="Password" class="input input-bordered" required>
+                <input type="password" placeholder="Confirm Password" class="input input-bordered" required>
+                <button type="submit" class="btn btn-primary">Sign Up</button>
+            </form>
+            <!-- <div class="divider">OR</div>
+            <div class="flex flex-col gap-4">
+                <button id="googleSignup" class="btn btn-outline btn-primary">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12.545,10.239v3.821h5.445c-0.712,2.315-2.647,3.972-5.445,3.972c-3.332,0-6.033-2.701-6.033-6.032s2.701-6.032,6.033-6.032c1.498,0,2.866,0.549,3.921,1.453l2.814-2.814C17.503,2.988,15.139,2,12.545,2C7.021,2,2.543,6.477,2.543,12s4.478,10,10.002,10c8.396,0,10.249-7.85,9.426-11.748L12.545,10.239z"/>
+                    </svg>
+                    Sign Up with Google
+                </button>
+                <button id="githubSignup" class="btn btn-outline btn-secondary">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                    </svg>
+                    Sign Up with GitHub
+                </button>
+            </div> -->
+        </div>
+        <form method="dialog" class="modal-backdrop">
+            <button>Close</button>
+        </form>
+    </dialog>
+
+    <!-- Content Section -->
+    <div class="container mx-auto px-4 py-8">
+        <p class="text-lg mb-8">
+            The private keys are encrypted in the database using PBKDF2 derived keys derived from the machine-specific password provided by the user and an owner-specific salt.
+        </p>
+    </div>
+
+    <!-- Screenshot Slider Section -->
+    <div class="container mx-auto px-4 py-8">
+        <h2 class="text-3xl font-bold mb-4">Screenshots</h2>
+        <div class="carousel w-full">
+            <div id="slide1" class="carousel-item relative w-full">
+                <img src="./images/dashboard.png" class="w-full" />
+                <div class="absolute flex justify-between transform -translate-y-1/2 left-5 right-5 top-1/2">
+                    <a href="#slide4" class="btn btn-circle">❮</a> 
+                    <a href="#slide2" class="btn btn-circle">❯</a>
+                </div>
+            </div> 
+            <div id="slide2" class="carousel-item relative w-full">
+                <img src="./images/connected-terminals.png" class="w-full" />
+                <div class="absolute flex justify-between transform -translate-y-1/2 left-5 right-5 top-1/2">
+                    <a href="#slide1" class="btn btn-circle">❮</a> 
+                    <a href="#slide3" class="btn btn-circle">❯</a>
+                </div>
+            </div> 
+            <div id="slide3" class="carousel-item relative w-full">
+                <img src="./images/add-machine.png" class="w-full" />
+                <div class="absolute flex justify-between transform -translate-y-1/2 left-5 right-5 top-1/2">
+                    <a href="#slide2" class="btn btn-circle">❮</a> 
+                    <a href="#slide4" class="btn btn-circle">❯</a>
+                </div>
+            </div>
+            <div id="slide4" class="carousel-item relative w-full">
+                <img src="./images/enter-password.png" class="w-full" />
+                <div class="absolute flex justify-between transform -translate-y-1/2 left-5 right-5 top-1/2">
+                    <a href="#slide3" class="btn btn-circle">❮</a> 
+                    <a href="#slide1" class="btn btn-circle">❯</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer bg-neutral text-neutral-content p-10">
+        <nav>
+          <h6 class="footer-title">Services</h6>
+          <a class="link link-hover">Branding</a>
+          <a class="link link-hover">Design</a>
+          <a class="link link-hover">Marketing</a>
+          <a class="link link-hover">Advertisement</a>
+        </nav>
+        <nav>
+          <h6 class="footer-title">Company</h6>
+          <a class="link link-hover">About us</a>
+          <a class="link link-hover">Contact</a>
+          <a class="link link-hover">Jobs</a>
+          <a class="link link-hover">Press kit</a>
+        </nav>
+        <nav>
+          <h6 class="footer-title">Legal</h6>
+          <a class="link link-hover">Terms of use</a>
+          <a class="link link-hover">Privacy policy</a>
+          <a class="link link-hover">Cookie policy</a>
+        </nav>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+    const jwt = document.cookie.split('; ').find(row => row.startsWith('jwt='));
+    if (jwt) {
+        window.location.href = 'dashboard.html';
+    }
+
+    // Login form submission
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const email = this.querySelector('input[type="email"]').value;
+        const password = this.querySelector('input[type="password"]').value;
+        login(email, password);
+    });
+
+    // Sign up form submission
+    document.getElementById('signupForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const firstName = this.querySelector('input[placeholder="First Name"]').value;
+        const lastName = this.querySelector('input[placeholder="Last Name"]').value;
+        const email = this.querySelector('input[type="email"]').value;
+        const password = this.querySelector('input[placeholder="Password"]').value;
+        const confirmPassword = this.querySelector('input[placeholder="Confirm Password"]').value;
+        
+        if (password !== confirmPassword) {
+            alert("Passwords don't match!");
+            return;
+        }
+        
+        signUp(firstName, lastName, email, password);
+    });
+
+    // Google authentication
+    document.getElementById('googleLogin').addEventListener('click', function() {
+        authenticate('google', 'login');
+    });
+    document.getElementById('googleSignup').addEventListener('click', function() {
+        authenticate('google', 'signup');
+    });
+
+    // GitHub authentication
+    document.getElementById('githubLogin').addEventListener('click', function() {
+        authenticate('github', 'login');
+    });
+    document.getElementById('githubSignup').addEventListener('click', function() {
+        authenticate('github', 'signup');
+    });
+});
+
+function login(email, password) {
+    fetch('/api/login', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.token) {
+            document.cookie = `jwt=${data.token}; path=/; max-age=86400; secure; samesite=strict`;
+            window.location.href = 'dashboard.html';
+        } else {
+            alert('Login failed: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred during login.');
+    });
+}
+
+function signUp(firstName, lastName, email, password) {
+    fetch('/api/register', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ firstName, lastName, email, password }),
+    })
+    .then(response => {
+        // Check if the response is OK (status code in the range 200–299)
+        if (!response.ok) {
+            return response.json().then(errData => {
+                throw new Error(errData.message || 'Sign up failed.');
+            });
+        }
+        return response.json();
+    })
+    .then(data => {
+        // Redirect if the user was registered successfully
+        if (data.message === 'User registered successfully') {
+            // JWT is already set as a cookie by the server, so redirect
+            window.location.href = '/dashboard';
+        } else {
+            alert('Sign up failed: ' + (data.error || 'Unknown error'));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred during sign up: ' + error.message);
+    });
+}
+
+
+function authenticate(provider, action) {
+    fetch(`/api/v1/auth/url?to=${provider}&action=${action}`)
+        .then(response => response.text())
+        .then(url => {
+            if (url) {
+                window.location.href = url;
+            } else {
+                console.error('Failed to get authentication URL');
+            }
+        })
+        .catch(error => console.error('Error:', error));
+}
+    </script>
 </body>
 </html>
