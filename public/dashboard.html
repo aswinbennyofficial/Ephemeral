@@ -175,6 +175,11 @@
         
         // Refresh file list every minute to update expiry times
         setInterval(loadFiles, 60000);
+
+        // Check if user is authenticated
+        if (!document.cookie.includes('jwt')) {
+            window.location.href = '/';
+        }
     </script>
 </body>
 </html>

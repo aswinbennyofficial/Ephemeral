@@ -10,7 +10,7 @@ require 'handlers.php';
 // Define routes
 $app->get('/', 'landingPageHandler');
 $app->get('/dashboard', 'dashboardPageHandler');
-$app->get('/download/{fileID}', 'downloadPageHandler');
+$app->get('/download/{slug}', 'downloadPageHandler');
 
 // New routes for authentication and file handling
 $app->post('/api/login', 'loginHandler');
@@ -18,5 +18,5 @@ $app->post('/api/register', 'registerHandler');
 $app->post('/api/upload', 'uploadFileHandler');
 // $app->get('/api/files', 'getFilesHandler');
 $app->get('/api/files/metadata', 'getFilesMetadataHandler');
-$app->get('/api/files/{fileID}', 'getFileHandler');
+$app->get('/api/download', 'downloadFileHandler');
 $app->delete('/api/files/{fileID}', 'deleteFileHandler');

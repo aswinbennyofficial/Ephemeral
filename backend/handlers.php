@@ -27,25 +27,98 @@ function dashboardPageHandler($request, $response) {
 // Handler for the download page
 // In handlers.php
 
+// function downloadPageHandler($request, $response, $args) {
+//     // Get the fileID from the route parameters
+//     $slug = $args['slug'];
+
+//     // Load the download.html file contents
+//     $htmlContent = file_get_contents(__DIR__ . '/public/download.html');
+
+//     // Create a JavaScript variable to hold the fileID
+//     $jsVariable = "<script>const slug = " . json_encode($slug) . ";</script>";
+
+//     // Prepend the JS variable to the HTML content
+//     $htmlContent = $jsVariable . $htmlContent;
+
+//     // Write the modified content to the response
+//     $response->getBody()->write($htmlContent);
+
+//     // Return the response with the content type set to HTML
+//     return $response->withHeader('Content-Type', 'text/html');
+// }
+
 function downloadPageHandler($request, $response, $args) {
-    // Get the fileID from the route parameters
-    $fileID = $args['fileID'];
+    try {
+        // Get the slug from the route parameters
+        $slug = $args['slug'] ?? null;
+        
+        // Validate slug exists
+        if (!$slug) {
+            $body = $response->getBody();
+            $body->write('<h1>404 - File Not Found</h1>');
+            return $response
+                ->withStatus(404)
+                ->withHeader('Content-Type', 'text/html')
+                ->withBody($body);
+        }
 
-    // Load the download.html file contents
-    $htmlContent = file_get_contents(__DIR__ . '/public/download.html');
+        // Validate slug format (assuming it should be alphanumeric + hyphens)
+        if (!preg_match('/^[a-zA-Z0-9-]+$/', $slug)) {
+            $body = $response->getBody();
+            $body->write('<h1>400 - Invalid File ID</h1>');
+            return $response
+                ->withStatus(400)
+                ->withHeader('Content-Type', 'text/html')
+                ->withBody($body);
+        }
 
-    // Create a JavaScript variable to hold the fileID
-    $jsVariable = "<script>const fileID = " . json_encode($fileID) . ";</script>";
+        // Verify file exists in database
+        $db = getDbConnection();
+        $stmt = $db->prepare('SELECT fileid FROM files WHERE slug = :slug AND expiry > CURRENT_TIMESTAMP');
+        $stmt->execute(['slug' => $slug]);
+        
+        if (!$stmt->fetch()) {
+            $body = $response->getBody();
+            $body->write('<h1>404 - File Not Found or Expired</h1>');
+            return $response
+                ->withStatus(404)
+                ->withHeader('Content-Type', 'text/html')
+                ->withBody($body);
+        }
 
-    // Prepend the JS variable to the HTML content
-    $htmlContent = $jsVariable . $htmlContent;
+        // Load the download page template
+        $templatePath = __DIR__ . '/public/download.html';
+        if (!file_exists($templatePath)) {
+            throw new RuntimeException('Template file not found');
+        }
 
-    // Write the modified content to the response
-    $response->getBody()->write($htmlContent);
+        $htmlContent = file_get_contents($templatePath);
+        if ($htmlContent === false) {
+            throw new RuntimeException('Failed to read template file');
+        }
 
-    // Return the response with the content type set to HTML
-    return $response->withHeader('Content-Type', 'text/html');
+        // Replace the placeholder with the actual slug
+        $htmlContent = str_replace('${slug}', htmlspecialchars($slug, ENT_QUOTES, 'UTF-8'), $htmlContent);
+
+        // Write to response body
+        $body = $response->getBody();
+        $body->write($htmlContent);
+
+        return $response
+            ->withHeader('Content-Type', 'text/html; charset=UTF-8')
+            ->withBody($body);
+
+    } catch (Exception $e) {
+        error_log('Download page error: ' . $e->getMessage());
+        $body = $response->getBody();
+        $body->write('<h1>500 - Internal Server Error</h1>');
+        return $response
+            ->withStatus(500)
+            ->withHeader('Content-Type', 'text/html')
+            ->withBody($body);
+    }
 }
+
 
 function loginHandler($request, $response) {
     $db = getDbConnection();

@@ -1,33 +1,122 @@
-<!-- In public/download.html -->
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Download Page</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/daisyui/4.4.19/full.min.css" rel="stylesheet" type="text/css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
     <script>
-        // You can now use fileID in your fetch requests or any other JavaScript logic
-        console.log("File ID:", fileID);
+        console.log('Slug:', `<?= $slug ?>`);
 
-        // Example of making a fetch request using fileID
-        fetch(`/api/download/${fileID}`)
+        function downloadFile() {
+            const password = document.getElementById('passwordInput').value;
+            const downloadBtn = document.getElementById('downloadBtn');
+            const loadingSpinner = document.getElementById('loadingSpinner');
+            
+            // Show loading state
+            downloadBtn.disabled = true;
+            loadingSpinner.classList.remove('hidden');
+
+            fetch(`/api/download/${slug}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ password: password })
+            })
             .then(response => {
                 if (response.ok) {
-                    return response.json();
+                    return response.blob();
                 }
-                throw new Error('Network response was not ok.');
+                throw new Error(response.statusText);
             })
-            .then(data => {
-                console.log('Download data:', data);
+            .then(blob => {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = slug;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                window.URL.revokeObjectURL(url);
             })
             .catch(error => {
-                console.error('Fetch error:', error);
+                console.error('Download error:', error);
+                document.getElementById('errorAlert').classList.remove('hidden');
+                document.getElementById('errorMessage').textContent = error.message;
+            })
+            .finally(() => {
+                // Reset loading state
+                downloadBtn.disabled = false;
+                loadingSpinner.classList.add('hidden');
             });
+        }
+
+        function copySlug() {
+            navigator.clipboard.writeText(slug).then(() => {
+                document.getElementById('copyBtn').innerHTML = 'Copied!';
+                setTimeout(() => {
+                    document.getElementById('copyBtn').innerHTML = 'Copy';
+                }, 2000);
+            });
+        }
+
+        function dismissError() {
+            document.getElementById('errorAlert').classList.add('hidden');
+        }
     </script>
 </head>
-<body>
-    <h1>Download Page</h1>
-    <p>Your File ID is: <span id="fileIDDisplay"></span></p>
-    <!-- Additional content goes here -->
+<body class="min-h-screen bg-base-200">
+    <div class="container mx-auto px-4 py-8">
+        <div class="max-w-md mx-auto">
+            <div class="card bg-base-100 shadow-xl">
+                <div class="card-body">
+                    <h1 class="card-title text-2xl mb-4">Download Your File</h1>
+                    
+                    <!-- File ID Display with Copy Button -->
+                    <div class="bg-base-200 p-4 rounded-lg mb-6">
+                        <div class="flex items-center justify-between">
+                            <div class="flex-1">
+                                <label class="text-sm font-semibold mb-1 block">Slug ID</label>
+                                <div class="text-lg font-mono" id="fileIDDisplay">${slug}</div>
+                            </div>
+                            <button class="btn btn-ghost btn-sm" id="copyBtn" onclick="copySlug()">Copy</button>
+                        </div>
+                    </div>
+
+                    <!-- Password Input -->
+                    <div class="form-control mb-6">
+                        <label class="label">
+                            <span class="label-text">Password (if required)</span>
+                        </label>
+                        <input type="password" 
+                               id="passwordInput" 
+                               placeholder="Enter password" 
+                               class="input input-bordered w-full" />
+                    </div>
+
+                    <!-- Error Alert -->
+                    <div id="errorAlert" class="alert alert-error mb-4 hidden">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <div>
+                            <span id="errorMessage">Error message here</span>
+                        </div>
+                        <button class="btn btn-ghost btn-sm" onclick="dismissError()">Dismiss</button>
+                    </div>
+
+                    <!-- Download Button -->
+                    <button id="downloadBtn" 
+                            class="btn btn-primary w-full" 
+                            onclick="downloadFile()">
+                        <span id="loadingSpinner" class="loading loading-spinner loading-sm hidden"></span>
+                        Download File
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
