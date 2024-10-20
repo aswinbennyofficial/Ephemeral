@@ -1,15 +1,6 @@
 version: '3.8'
 
 services:
-  web:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    ports:
-      - "8080:80"                # Map port 80 of the container to port 8080 on the host
-    # volumes:
-      # - ./app:/var/www/html      # Mount the app directory for live changes
-
   db:
     image: bitnami/postgresql
     environment:
@@ -20,6 +11,20 @@ services:
       - ephemeralDB:/bitnami/postgresql/data  # Use named volume for persistence
     networks:
       - my_network
+      
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:80"                # Map port 80 of the container to port 8080 on the host
+    depends_on:
+      - db
+    restart: unless-stopped
+    # volumes:
+      # - ./app:/var/www/html      # Mount the app directory for live changes
+
+  
 
 networks:
   my_network:

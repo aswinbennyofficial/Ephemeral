@@ -4,6 +4,8 @@
         "slim/psr7": "^1.7",
         "jimtools/jwt-auth": "^2.0",
         "firebase/php-jwt": "^6.10",
-        "ramsey/uuid": "^4.7"
+        "ramsey/uuid": "^4.7",
+        "aws/aws-sdk-php": "^3.324",
+        "robinvdvleuten/ulid": "^5.0"
     }
 }

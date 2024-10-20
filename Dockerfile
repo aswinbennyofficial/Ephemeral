@@ -26,5 +26,7 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 
 RUN composer install --no-dev --optimize-autoloader
 
+# CMD php migrations.php 
+
 # Expose port 80
 EXPOSE 80
