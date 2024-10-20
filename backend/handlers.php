@@ -179,6 +179,15 @@ function uploadFileHandler($request, $response) {
         return $response->withStatus(400)->withJson(['error' => 'No file uploaded']);
     }
 
+    // check if file size less than 25 mb
+    if ($uploadedFiles['file']->getSize() > 25 * 1024 * 1024) {
+        return $response->withStatus(400)->withJson(['error' => 'File size exceeds the limit of 25MB']);
+    }
+
+    
+
+
+
     $file = $uploadedFiles['file'];
     $extension = pathinfo($file->getClientFilename(), PATHINFO_EXTENSION);
     $fileID = Uuid::uuid4()->toString();

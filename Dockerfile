@@ -16,6 +16,8 @@ RUN mkdir -p /var/www/html/uploads && \
 # Copy application files to the Apache document root
 COPY backend/ /var/www/html/
 COPY public/ /var/www/html/public/
+COPY db.sql /var/www/html/
+COPY .env /var/www/html/
 
 # Set the working directory
 WORKDIR /var/www/html
