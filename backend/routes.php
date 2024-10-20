@@ -16,5 +16,7 @@ $app->get('/download/{fileID}', 'downloadPageHandler');
 $app->post('/api/login', 'loginHandler');
 $app->post('/api/register', 'registerHandler');
 $app->post('/api/upload', 'uploadFileHandler');
-$app->get('/api/files', 'getFilesHandler');
+// $app->get('/api/files', 'getFilesHandler');
+$app->get('/api/files/metadata', 'getFilesMetadataHandler');
+$app->get('/api/files/{fileID}', 'getFileHandler');
 $app->delete('/api/files/{fileID}', 'deleteFileHandler');

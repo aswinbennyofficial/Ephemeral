@@ -56,9 +56,10 @@
                         <thead>
                             <tr>
                                 <th>File Name</th>
-                                <th>URL</th>
+                                <th>Slug</th>
+                                <th>Size</th>
                                 <th>Expires In</th>
-                                <th>Actions</th>
+                                <th>Action</th>
                             </tr>
                         </thead>
                         <tbody id="filesTable">
@@ -89,36 +90,32 @@
             }
         }
 
-        // Load existing files
         async function loadFiles() {
-            try {
-                const response = await fetch('/api/files');
-                const files = await response.json();
-                const tbody = document.getElementById('filesTable');
-                tbody.innerHTML = '';
-                
-                files.forEach(file => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>${file.slug}</td>
-                        <td>
-                            <a href="${file.url}" class="link link-primary" target="_blank">
-                                ${file.url}
-                            </a>
-                        </td>
-                        <td>${getTimeRemaining(file.expiry)}</td>
-                        <td>
-                            <button onclick="deleteFile('${file.fileID}')" class="btn btn-error btn-sm">
-                                Delete
-                            </button>
-                        </td>
-                    `;
-                    tbody.appendChild(row);
-                });
-            } catch (error) {
-                console.error('Error loading files:', error);
-            }
+        try {
+            const response = await fetch('/api/files/metadata');
+            const files = await response.json();
+            const tbody = document.getElementById('filesTable');
+            tbody.innerHTML = '';
+
+            files.forEach(file => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${file.filename}</td>
+                    <td>${file.slug}</td>
+                    <td>${file.size} bytes</td>
+                    <td>${getTimeRemaining(file.expiry)}</td>
+                    <td>
+                        <button onclick="deleteFile('${file.fileID}')" class="btn btn-error btn-sm">
+                            Delete
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        } catch (error) {
+            console.error('Error loading files:', error);
         }
+    }
 
         document.getElementById('uploadForm').addEventListener('submit', function (e) {
             e.preventDefault();

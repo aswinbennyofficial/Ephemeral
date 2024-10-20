@@ -464,20 +464,80 @@ function uploadFileHandler($request, $response) {
     }
 }
 
-
-
-
-
-function getFilesHandler($request, $response) {
+function getFilesMetadataHandler($request, $response) {
     $db = getDbConnection();
-    
-    // Fetch files belonging to the logged-in user
-    $stmt = $db->prepare('SELECT fileID, fileURL, slug, expiry FROM files WHERE userID = :userID');
-    $stmt->execute(['userID' => $_SESSION['user_id']]); // Assuming session contains user_id
-    $files = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    return jsonResponse($response, $files);
-}
+    // Early validation of JWT token
+    if (!isset($_COOKIE['jwt'])) {
+        return jsonResponse($response, ['error' => 'Authentication required. JWT token missing.'], 401);
+    }
+
+    // Load JWT secret from environment variable or config
+    $jwtSecret = 'your_secret_key'; // Change this to your environment variable if needed
+    if (!$jwtSecret) {
+        throw new RuntimeException('JWT secret key not configured');
+    }
+
+    // Validate JWT and extract user email
+    try {
+        $jwtToken = $_COOKIE['jwt'];
+        $decodedJwt = JWT::decode($jwtToken, new Key($jwtSecret, 'HS256'));
+        $userEmail = $decodedJwt->email;
+
+        // Get the user ID from the database using the email
+        $userIdStmt = $db->prepare('SELECT userid FROM users WHERE email = :email');
+        $userIdStmt->execute(['email' => $userEmail]);
+        $userId = $userIdStmt->fetchColumn();
+
+        if (!$userId) {
+            return jsonResponse($response, ['error' => 'User not found.'], 404);
+        }
+
+    } catch (Exception $e) {
+        return jsonResponse($response, [
+            'error' => 'Invalid authentication token',
+            'details' => $e->getMessage()
+        ], 401);
+    }
+
+    // Fetch files belonging to the logged-in user
+    try {
+        $stmt = $db->prepare('SELECT fileid, slug, metadata, expiry FROM files WHERE userid = :userid');
+        $stmt->execute(['userid' => $userId]); // Use the retrieved user ID
+        $files = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        // Extract necessary metadata
+        $formattedFiles = array_map(function($file) {
+            $metadata = json_decode($file['metadata'], true); // Assuming metadata is stored as JSON
+            return [
+                'fileID' => $file['fileid'],
+                'slug' => $file['slug'],
+                'filename' => $metadata['originalName'] ?? 'Unknown', // Extract filename, default to 'Unknown'
+                'size' => $metadata['size'] ?? 0, // Extract size, default to 0
+                'expiry' => $file['expiry'], // Keep expiry for calculating remaining time
+            ];
+        }, $files);
+
+        if (empty($formattedFiles)) {
+            return jsonResponse($response, ['message' => 'No files found for this user.'], 404);
+        }
+
+    } catch (PDOException $e) {
+        error_log('Database error: ' . $e->getMessage());
+        return jsonResponse($response, [
+            'error' => 'Database error occurred while fetching files.',
+            'details' => $e->getMessage()
+        ], 500);
+    }
+
+    return jsonResponse($response, $formattedFiles);
+
+    }
+
+
+
+
+
 
 
 function deleteFileHandler($request, $response, $args) {
