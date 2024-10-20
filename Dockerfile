@@ -22,5 +22,9 @@ COPY .env /var/www/html/
 # Set the working directory
 WORKDIR /var/www/html
 
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+RUN composer install --no-dev --optimize-autoloader
+
 # Expose port 80
 EXPOSE 80

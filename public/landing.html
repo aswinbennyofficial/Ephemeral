@@ -193,7 +193,7 @@
         document.addEventListener('DOMContentLoaded', function() {
     const jwt = document.cookie.split('; ').find(row => row.startsWith('jwt='));
     if (jwt) {
-        window.location.href = 'dashboard.html';
+        window.location.href = 'dashboard';
     }
 
     // Login form submission
