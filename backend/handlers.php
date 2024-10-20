@@ -651,6 +651,163 @@ function deleteFileHandler($request, $response, $args) {
 }
 
 
+// function downloadFileHandler($request, $response, $args) {
+//     try {
+//         $db = getDbConnection();
+        
+//         // Get slug from route parameters
+//         $slug = $args['slug'] ?? '';
+        
+//         // Parse the JSON body for password
+//         $data = json_decode($request->getBody(), true);
+//         $password = $data['password'] ?? '';
+
+//         // Validate input
+//         if (empty($slug)) {
+//             return jsonResponse($response, ['error' => 'Slug is required'], 400);
+//         }
+
+//         // Fetch file metadata
+//         $stmt = $db->prepare('
+//             SELECT f.*, u.email as owner_email 
+//             FROM files f 
+//             JOIN users u ON f.userid = u.userid 
+//             WHERE f.slug = :slug AND f.expiry > CURRENT_TIMESTAMP
+//         ');
+//         $stmt->execute(['slug' => $slug]);
+//         $file = $stmt->fetch(PDO::FETCH_ASSOC);
+
+//         if (!$file) {
+//             return jsonResponse($response, ['error' => 'File not found or expired'], 404);
+//         }
+
+//         // Check if password is required
+//         if ($file['passwordhash'] && !$password) {
+//             return jsonResponse($response, ['error' => 'Password required'], 401);
+//         }
+
+//         // Verify password if set
+//         if ($file['passwordhash'] && !password_verify($password, $file['passwordhash'])) {
+//             return jsonResponse($response, ['error' => 'Invalid password'], 401);
+//         }
+
+//         try {
+//             // Get R2 client
+//             $r2Client = getR2Client();
+            
+//             // Generate a pre-signed URL that expires in 5 minutes
+//             $command = $r2Client->getCommand('GetObject', [
+//                 'Bucket' => 'ephermeral',
+//                 'Key' => $file['objectkey']
+//             ]);
+
+//             $request = $r2Client->createPresignedRequest($command, '+5 minutes');
+//             $presignedUrl = (string)$request->getUri();
+
+//             // Log the download attempt
+//             error_log(sprintf(
+//                 'Download attempt - Slug: %s, User Email: %s, IP: %s',
+//                 $slug,
+//                 $file['owner_email'],
+//                 $_SERVER['REMOTE_ADDR']
+//             ));
+
+//             // Return the pre-signed URL
+//             return jsonResponse($response, [
+//                 'url' => $presignedUrl,
+//                 'filename' => json_decode($file['metadata'], true)['originalName'] ?? $slug
+//             ]);
+
+//         } catch (Exception $e) {
+//             error_log('R2 error: ' . $e->getMessage());
+//             return jsonResponse($response, ['error' => 'Failed to generate download URL'], 500);
+//         }
+
+//     } catch (Exception $e) {
+//         error_log('Download error: ' . $e->getMessage());
+//         return jsonResponse($response, ['error' => 'Internal server error'], 500);
+//     }
+// }
+
+function downloadFileHandler($request, $response, $args) {
+    try {
+        $db = getDbConnection();
+        
+        // Get slug from route parameters
+        $slug = $args['slug'] ?? '';
+        
+        // Parse the JSON body for the password
+        $data = json_decode($request->getBody(), true);
+        $password = $data['password'] ?? '';
+
+        // Validate input
+        if (empty($slug)) {
+            return jsonResponse($response, ['error' => 'Slug is required'], 400);
+        }
+
+        // Fetch the object key from the files table using the slug
+        $stmt = $db->prepare('
+            SELECT objectkey, passwordhash, metadata 
+            FROM files 
+            WHERE slug = :slug AND expiry > CURRENT_TIMESTAMP
+        ');
+        $stmt->execute(['slug' => $slug]);
+        $file = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if (!$file) {
+            return jsonResponse($response, ['error' => 'File not found or expired'], 404);
+        }
+
+        // Check if password is required
+        if ($file['passwordhash'] && !$password) {
+            return jsonResponse($response, ['error' => 'Password required'], 401);
+        }
+
+        // Verify password if set
+        if ($file['passwordhash'] && !password_verify($password, $file['passwordhash'])) {
+            return jsonResponse($response, ['error' => 'Invalid password'], 401);
+        }
+
+        try {
+            // Get R2 client
+            $r2Client = getR2Client();
+            
+            // Generate a pre-signed URL that expires in 5 minutes
+            $command = $r2Client->getCommand('GetObject', [
+                'Bucket' => 'ephermeral', // Ensure this matches your bucket name
+                'Key' => $file['objectkey'] // Use the fetched object key
+            ]);
+
+            // Create the presigned request for downloading the file
+            $request = $r2Client->createPresignedRequest($command, '+5 minutes');
+            $presignedUrl = (string)$request->getUri();
+
+            // Log the download attempt
+            error_log(sprintf(
+                'Download attempt - Slug: %s, IP: %s',
+                $slug,
+                $_SERVER['REMOTE_ADDR']
+            ));
+
+            // Return the pre-signed URL along with original filename from metadata
+            $metadata = json_decode($file['metadata'], true);
+            return jsonResponse($response, [
+                'url' => $presignedUrl,
+                'filename' => $metadata['originalName'] ?? $slug
+            ]);
+
+        } catch (Exception $e) {
+            error_log('R2 error: ' . $e->getMessage());
+            return jsonResponse($response, ['error' => 'Failed to generate download URL'], 500);
+        }
+
+    } catch (Exception $e) {
+        error_log('Download error: ' . $e->getMessage());
+        return jsonResponse($response, ['error' => 'Internal server error'], 500);
+    }
+}
+
+
 
 // Utility function to return JSON response
 function jsonResponse($response, $data, $status = 200) {

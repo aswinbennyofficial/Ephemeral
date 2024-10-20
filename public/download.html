@@ -9,6 +9,50 @@
     <script>
         console.log('Slug:', `<?= $slug ?>`);
 
+        // function downloadFile() {
+        //     const password = document.getElementById('passwordInput').value;
+        //     const downloadBtn = document.getElementById('downloadBtn');
+        //     const loadingSpinner = document.getElementById('loadingSpinner');
+            
+        //     // Show loading state
+        //     downloadBtn.disabled = true;
+        //     loadingSpinner.classList.remove('hidden');
+
+        //     fetch(`/api/download/${slug}`, {
+        //         method: 'POST',
+        //         headers: {
+        //             'Content-Type': 'application/json'
+        //         },
+        //         body: JSON.stringify({ password: password })
+        //     })
+        //     .then(response => {
+        //         if (response.ok) {
+        //             return response.blob();
+        //         }
+        //         throw new Error(response.statusText);
+        //     })
+        //     .then(blob => {
+        //         const url = window.URL.createObjectURL(blob);
+        //         const a = document.createElement('a');
+        //         a.href = url;
+        //         a.download = slug;
+        //         document.body.appendChild(a);
+        //         a.click();
+        //         a.remove();
+        //         window.URL.revokeObjectURL(url);
+        //     })
+        //     .catch(error => {
+        //         console.error('Download error:', error);
+        //         document.getElementById('errorAlert').classList.remove('hidden');
+        //         document.getElementById('errorMessage').textContent = error.message;
+        //     })
+        //     .finally(() => {
+        //         // Reset loading state
+        //         downloadBtn.disabled = false;
+        //         loadingSpinner.classList.add('hidden');
+        //     });
+        // }
+
         function downloadFile() {
             const password = document.getElementById('passwordInput').value;
             const downloadBtn = document.getElementById('downloadBtn');
@@ -27,19 +71,22 @@
             })
             .then(response => {
                 if (response.ok) {
-                    return response.blob();
+                    return response.json();  // Parse the JSON response
                 }
                 throw new Error(response.statusText);
             })
-            .then(blob => {
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = slug;
-                document.body.appendChild(a);
-                a.click();
-                a.remove();
-                window.URL.revokeObjectURL(url);
+            .then(data => {
+                // Check if URL is returned
+                if (data.url) {
+                    const a = document.createElement('a');
+                    a.href = data.url;  // Use the pre-signed URL
+                    a.download = data.filename;  // Use the provided filename
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                } else {
+                    throw new Error('Download URL not found in response.');
+                }
             })
             .catch(error => {
                 console.error('Download error:', error);
@@ -52,6 +99,7 @@
                 loadingSpinner.classList.add('hidden');
             });
         }
+
 
         function copySlug() {
             navigator.clipboard.writeText(slug).then(() => {

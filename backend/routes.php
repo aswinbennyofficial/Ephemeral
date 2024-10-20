@@ -18,5 +18,5 @@ $app->post('/api/register', 'registerHandler');
 $app->post('/api/upload', 'uploadFileHandler');
 // $app->get('/api/files', 'getFilesHandler');
 $app->get('/api/files/metadata', 'getFilesMetadataHandler');
-$app->get('/api/download', 'downloadFileHandler');
+$app->post('/api/download/{slug}', 'downloadFileHandler');
 $app->delete('/api/files/{fileID}', 'deleteFileHandler');
