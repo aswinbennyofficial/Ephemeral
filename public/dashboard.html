@@ -101,7 +101,7 @@
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td>${file.filename}</td>
-                    <td>${file.slug}</td>
+                    <td><a href="/download/${file.slug}" target="_blank">Download ${file.slug}</a></td>
                     <td>${file.size} bytes</td>
                     <td>${getTimeRemaining(file.expiry)}</td>
                     <td>

@@ -72,6 +72,8 @@
             .then(response => {
                 if (response.ok) {
                     return response.json();  // Parse the JSON response
+                    // refresh window
+                    
                 }
                 throw new Error(response.statusText);
             })

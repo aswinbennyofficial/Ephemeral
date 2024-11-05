@@ -617,27 +617,52 @@ function deleteFileHandler($request, $response, $args) {
     $fileID = $args['fileID'];
     $r2Client = getR2Client();
 
-    // Fetch the file from the database
-    $db = getDbConnection();
-    $stmt = $db->prepare('SELECT fileURL FROM files WHERE fileID = :fileID AND userID = :userID');
-    $stmt->execute([
-        'fileID' => $fileID,
-        'userID' => $_SESSION['user_id'] // Assuming session contains user_id
-    ]);
-    $file = $stmt->fetch();
-
-    if (!$file) {
-        return jsonResponse($response, ['error' => 'File not found or permission denied'], 404);
+     // Early validation of JWT token
+     if (!isset($_COOKIE['jwt'])) {
+        return jsonResponse($response, ['error' => 'Authentication required. JWT token missing.'], 401);
     }
 
+    // Load JWT secret from environment variable or config
+    $jwtSecret = 'your_secret_key';
+    if (!$jwtSecret) {
+        throw new RuntimeException('JWT secret key not configured');
+    }
+
+    // Validate JWT and extract user email
+    try {
+        $jwtToken = $_COOKIE['jwt'];
+        $decodedJwt = JWT::decode($jwtToken, new Key($jwtSecret, 'HS256'));
+        $userEmail = $decodedJwt->email;
+    } catch (Exception $e) {
+        return jsonResponse($response, [
+            'error' => 'Invalid authentication token',
+            'details' => $e->getMessage()
+        ], 401);
+    }
+
+
+    // Fetch the file from the database
+    $db = getDbConnection();
+    // $stmt = $db->prepare('SELECT URL FROM files WHERE fileid = :fileID AND userid = :userID');
+    // $stmt->execute([
+    //     'fileID' => $fileID,
+    //     'userID' => $userEmail
+    // ]);
+    // $file = $stmt->fetch();
+
+
+    // if (!$file) {
+    //     return jsonResponse($response, ['error' => "File with ID {$fileID} and user {$userEmail} not found or permission denied" ], 404);
+    // }
+
     // Extract the file name from the fileURL
-    $fileName = basename($file['fileURL']);
+    // $fileName = basename($file['fileURL']);
 
     // Delete from R2
     try {
         $r2Client->deleteObject([
             'Bucket' => 'ephermeral',
-            'Key'    => $fileName
+            'Key'    => $fileID
         ]);
 
         // Delete from the database
