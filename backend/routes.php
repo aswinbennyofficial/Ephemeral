@@ -15,6 +15,7 @@ $app->get('/download/{slug}', 'downloadPageHandler');
 // New routes for authentication and file handling
 $app->post('/api/login', 'loginHandler');
 $app->post('/api/register', 'registerHandler');
+$app->get('/api/logout', 'logoutHandler');
 $app->post('/api/upload', 'uploadFileHandler');
 // $app->get('/api/files', 'getFilesHandler');
 $app->get('/api/files/metadata', 'getFilesMetadataHandler');

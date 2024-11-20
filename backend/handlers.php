@@ -380,6 +380,13 @@ function registerHandler($request, $response) {
 //     }
 // }
 
+function logoutHandler($request, $response) {
+    // Unset the JWT cookie
+    setcookie('jwt', '', time() - 3600, '/', '', false, true);
+
+    return jsonResponse($response, ['message' => 'Logged out successfully']);
+}
+
 
 function uploadFileHandler($request, $response) {
     try {

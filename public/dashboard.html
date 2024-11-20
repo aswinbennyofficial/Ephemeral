@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,63 +9,90 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&family=Ubuntu:wght@400;700&display=swap" rel="stylesheet">
-
+    <style>
+        body {
+            background-color: #1a1a1a;
+            color: #ffffff;
+        }
+        .upload-zone {
+            border: 2px dashed #4a5568;
+            transition: all 0.3s ease;
+        }
+        .upload-zone:hover {
+            border-color: #60a5fa;
+        }
+    </style>
 </head>
 <body>
-    <div class="container mx-auto p-4">
-        <h1 class="text-3xl font-bold mb-8">File Upload Dashboard</h1>
-        
-        <!-- Upload Form -->
-        <div class="card bg-base-200 shadow-xl mb-8">
-            <div class="card-body">
-                <h2 class="card-title">Upload New File</h2>
-                <p class="text-sm text-gray-600 mb-4">Files will automatically expire after 7 days</p>
-                <form id="uploadForm" class="space-y-4">
-                    <div class="form-control w-full">
-                        <label class="label">
-                            <span class="label-text">Choose file</span>
-                        </label>
-                        <input type="file" class="file-input file-input-bordered w-full" id="fileInput" required />
-                    </div>
-
-                    <div class="form-control w-full">
-                        <label class="label">
-                            <span class="label-text">Password (optional)</span>
-                        </label>
-                        <input type="password" class="input input-bordered w-full" id="passwordInput" />
-                    </div>
-
-                    <div class="form-control w-full">
-                        <label class="label">
-                            <span class="label-text">Custom Slug (optional)</span>
-                        </label>
-                        <input type="text" class="input input-bordered w-full" id="slugInput" placeholder="e.g., my-special-file" />
-                    </div>
-
-                    <button type="submit" class="btn btn-primary">Upload File</button>
-                </form>
+    <div class="min-h-screen">
+        <!-- Navigation Bar -->
+        <nav class="bg-gray-800 p-4 shadow-lg">
+            <div class="container mx-auto flex justify-between items-center">
+                <h1 class="text-2xl font-bold text-white">File Upload Dashboard</h1>
+                <button onclick="logout()" class="btn btn-ghost text-white hover:bg-gray-700">
+                    Logout
+                </button>
             </div>
-        </div>
+        </nav>
 
-        <!-- Files List -->
-        <div class="card bg-base-200 shadow-xl">
-            <div class="card-body">
-                <h2 class="card-title">Your Files</h2>
-                <div class="overflow-x-auto">
-                    <table class="table w-full">
-                        <thead>
-                            <tr>
-                                <th>File Name</th>
-                                <th>Slug</th>
-                                <th>Size</th>
-                                <th>Expires In</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody id="filesTable">
-                            <!-- Files will be inserted here -->
-                        </tbody>
-                    </table>
+        <div class="container mx-auto p-6">
+            <!-- Upload Form -->
+            <div class="card bg-gray-800 shadow-xl mb-8">
+                <div class="card-body">
+                    <h2 class="card-title text-xl font-bold text-white mb-4">Upload New File</h2>
+                    <p class="text-sm text-gray-400 mb-4">Files will automatically expire after 7 days</p>
+                    
+                    <form id="uploadForm" class="space-y-6">
+                        <div class="upload-zone p-8 rounded-lg text-center cursor-pointer">
+                            <div class="form-control w-full">
+                                <label class="label cursor-pointer flex flex-col items-center gap-4">
+                                    <span class="label-text text-lg text-gray-300">Drop files here or click to upload</span>
+                                    <input type="file" class="file-input file-input-bordered w-full max-w-md" id="fileInput" required />
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="form-control w-full">
+                                <label class="label">
+                                    <span class="label-text text-gray-300">Password (optional)</span>
+                                </label>
+                                <input type="password" class="input input-bordered w-full bg-gray-700" id="passwordInput" />
+                            </div>
+
+                            <div class="form-control w-full">
+                                <label class="label">
+                                    <span class="label-text text-gray-300">Custom Slug (optional)</span>
+                                </label>
+                                <input type="text" class="input input-bordered w-full bg-gray-700" id="slugInput" placeholder="e.g., my-special-file" />
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-full md:w-auto">Upload File</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Files List -->
+            <div class="card bg-gray-800 shadow-xl">
+                <div class="card-body">
+                    <h2 class="card-title text-xl font-bold text-white mb-6">Your Files</h2>
+                    <div class="overflow-x-auto">
+                        <table class="table w-full">
+                            <thead>
+                                <tr class="bg-gray-700">
+                                    <th class="text-gray-300">File Name</th>
+                                    <th class="text-gray-300">Slug</th>
+                                    <th class="text-gray-300">Size</th>
+                                    <th class="text-gray-300">Expires In</th>
+                                    <th class="text-gray-300">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="filesTable" class="text-gray-300">
+                                <!-- Files will be inserted here -->
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
@@ -90,34 +117,70 @@
             }
         }
 
-        async function loadFiles() {
-        try {
-            const response = await fetch('/api/files/metadata');
-            const files = await response.json();
-            const tbody = document.getElementById('filesTable');
-            tbody.innerHTML = '';
-
-            files.forEach(file => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${file.filename}</td>
-                    <td><a href="/download/${file.slug}" target="_blank">Download ${file.slug}</a></td>
-                    <td>${file.size} bytes</td>
-                    <td>${getTimeRemaining(file.expiry)}</td>
-                    <td>
-                        <button onclick="deleteFile('${file.fileID}')" class="btn btn-error btn-sm">
-                            Delete
-                        </button>
-                    </td>
-                `;
-                tbody.appendChild(row);
-            });
-        } catch (error) {
-            console.error('Error loading files:', error);
+        // Format file size
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
         }
-    }
 
-        document.getElementById('uploadForm').addEventListener('submit', function (e) {
+        async function loadFiles() {
+            try {
+                const response = await fetch('/api/files/metadata');
+                const files = await response.json();
+                const tbody = document.getElementById('filesTable');
+                tbody.innerHTML = '';
+
+                files.forEach(file => {
+                    const row = document.createElement('tr');
+                    row.className = 'hover:bg-gray-700 transition-colors';
+                    row.innerHTML = `
+                        <td class="font-medium">${file.filename}</td>
+                        <td>${file.slug}</td>
+                        <td>${formatFileSize(file.size)}</td>
+                        <td>
+                            <span class="badge badge-ghost">${getTimeRemaining(file.expiry)}</span>
+                        </td>
+                        <td class="space-x-2">
+                            <a href="/download/${file.slug}" 
+                               class="btn btn-primary btn-sm" target="_blank">
+                                Download
+                            </a>
+                            <button onclick="deleteFile('${file.fileID}')" 
+                                    class="btn btn-error btn-sm">
+                                Delete
+                            </button>
+                        </td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            } catch (error) {
+                console.error('Error loading files:', error);
+            }
+        }
+
+        // Handle logout
+        async function logout() {
+            try {
+                const response = await fetch('/api/logout', {
+                    method: 'GET',
+                    credentials: 'include'
+                });
+                
+                if (response.ok) {
+                    window.location.href = '/';
+                } else {
+                    throw new Error('Logout failed');
+                }
+            } catch (error) {
+                console.error('Error during logout:', error);
+                alert('Failed to logout. Please try again.');
+            }
+        }
+
+        document.getElementById('uploadForm').addEventListener('submit', async function(e) {
             e.preventDefault();
 
             const file = document.getElementById('fileInput').files[0];
@@ -129,35 +192,36 @@
             if (password) formData.append('password', password);
             if (slug) formData.append('slug', slug);
 
-            fetch('/api/upload', {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'Authorization': `Bearer ${document.cookie.replace(/(?:(?:^|.*;\s*)jwt\s*\=\s*([^;]*).*$)|^.*$/, "$1")}`
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
+            try {
+                const response = await fetch('/api/upload', {
+                    method: 'POST',
+                    body: formData,
+                    credentials: 'include'
+                });
+
+                const data = await response.json();
+                
                 if (data.error) {
                     alert(data.error);
                 } else {
                     alert('File uploaded successfully! Slug: ' + data.slug);
+                    loadFiles();
+                    // Reset form
+                    e.target.reset();
                 }
-            })
-            .catch(error => {
+            } catch (error) {
                 console.error('Error:', error);
                 alert('An error occurred during file upload.');
-            });
+            }
         });
 
-
-        // Handle file deletion
         async function deleteFile(fileID) {
             if (!confirm('Are you sure you want to delete this file?')) return;
             
             try {
                 const response = await fetch(`/api/files/${fileID}`, {
-                    method: 'DELETE'
+                    method: 'DELETE',
+                    credentials: 'include'
                 });
                 
                 if (response.ok) {
@@ -167,6 +231,7 @@
                 }
             } catch (error) {
                 console.error('Error deleting file:', error);
+                alert('Failed to delete file. Please try again.');
             }
         }
 
@@ -176,9 +241,9 @@
         // Refresh file list every minute to update expiry times
         setInterval(loadFiles, 60000);
 
-        // Check if user is authenticated
+        // Authentication check
         // if (!document.cookie.includes('jwt')) {
-        //     window.location.href = '/login';
+        //     window.location.href = '/';
         // }
     </script>
 </body>

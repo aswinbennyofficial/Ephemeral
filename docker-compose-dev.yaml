@@ -13,16 +13,12 @@ services:
       - my_network
       
   web:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: aswinbenny/ephermeral
     ports:
-      - "8080:80"                # Map port 80 of the container to port 8080 on the host
+      - "8081:80"                # Map port 80 of the container to port 8080 on the host
     depends_on:
       - db
     restart: unless-stopped
-    networks:
-      - my_network
     # volumes:
       # - ./app:/var/www/html      # Mount the app directory for live changes
 
